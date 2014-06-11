@@ -25,21 +25,21 @@ int main()
      *	1 - Perceptron Simples
      *	2 - Adaline
      */
-    int idClassifier = 2;
+    int idClassifier = 1;
 
 	int numEpochs = 100;
 	double learningRate = 0.1;
-	double acceptableError = 0.000001;
+	double acceptableError = 0.01;
 
 	std::vector< std::vector<double> > trainingData;
 	std::vector< std::vector<int> > trainingTarget;
 	std::vector<double> meanMatrix;
 	std::vector<double> stdMatrix;
 
-	fileInput("datasets/iris.data", trainingData, trainingTarget);
+	//fileInput("datasets/iris.data", trainingData, trainingTarget);
 	//fileInput("datasets/wine.data", trainingData, trainingTarget);
 	//fileInput("datasets/dermatology.data", trainingData, trainingTarget);
-	//fileInput("datasets/column.data", trainingData, trainingTarget);
+	fileInput("datasets/column.data", trainingData, trainingTarget);
 
 	// normalizacao z-score
     meanMatrix = mean(trainingData);
@@ -74,8 +74,10 @@ int main()
 		adaline.config(2, numInputs, numOutputs);
 		adaline.trainingConfig(numEpochs, learningRate, acceptableError);
 		adaline.training(trainingData, trainingTarget);
+		adaline.operation(trainingData, trainingTarget);
 
 		fileOutputWeights("weights.txt", adaline.neurons);
+		fileOutputConfusionMatrix("confusionMatrix.txt", adaline.confusionMatrix);
     }
 
     cout << endl << "Processamento Concluido!" << endl;

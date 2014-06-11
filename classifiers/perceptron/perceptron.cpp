@@ -80,13 +80,13 @@ void Perceptron::training(std::vector< std::vector<double> >& data, std::vector<
 
 void Perceptron::perceptronOutput(std::vector<double>& input)
 {
-	int pot = 0;
+	double pot = 0;
 
 	for(int n = 0; n < numNeurons; n++)
 	{
 		pot = neurons[n].activationPotencial(input);
 
-		if(pot >= 0)
+		if(pot >= 0.0)
 			output[n] = 1;
 		else
 			output[n] = 0;

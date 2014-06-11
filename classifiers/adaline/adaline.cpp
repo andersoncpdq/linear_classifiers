@@ -48,16 +48,16 @@ void Adaline::training(std::vector< std::vector<double> >& data, std::vector< st
 
 	for(int epoch = 0; epoch < numEpochs; epoch++)
 	{
-		cout << "Epoca " << epoch << endl;
 		for(int example = 0; example < numExamples; example++)
 		{
-			cout << "Padrao " << example << endl;
-			computePotentialAndError(data[example], target[example]);
+			computePotentialAndError(epoch, data[example], target[example]);
 			adjustWeights(data[example], target[example]);
 		}
 		cntEpochs++;
 
-		getLeastMeanSquare(epoch, data, target);
+		leastMeanSquare[epoch] /= numExamples;
+
+		//cout << "LMS[" << epoch << "] = " << leastMeanSquare[epoch] << endl;
 
 		if( leastMeanSquare[epoch] <= acceptableError )
 			break;
@@ -65,16 +65,19 @@ void Adaline::training(std::vector< std::vector<double> >& data, std::vector< st
 	cout << endl << "Quantidade de epocas: " << cntEpochs << endl;
 }
 
-void Adaline::computePotentialAndError(std::vector<double>& input, std::vector<int>& target)
+void Adaline::computePotentialAndError(int epoch, std::vector<double>& input, std::vector<int>& target)
 {
+	double ms = 0;
+
 	for(int n = 0; n < numNeurons; n++)
 	{
 		potential[n] = neurons[n].activationPotencial(input);
 		error[n] = target[n] - potential[n];
 
-		/*cout << "Potencial[" << n << "] = " << potential[n] << endl;
-		cout << "Error[" << n << "] = " << error[n] << endl;*/
+		ms += pow(error[n], 2);
 	}
+
+	leastMeanSquare[epoch] += ms;
 }
 
 void Adaline::adjustWeights(std::vector<double>& input, std::vector<int>& target)
@@ -96,19 +99,31 @@ void Adaline::adjustWeights(std::vector<double>& input, std::vector<int>& target
 	}
 }
 
-void Adaline::getLeastMeanSquare(int epoch, std::vector< std::vector<double> >& data, std::vector< std::vector<int> >& target)
+void Adaline::operation(std::vector< std::vector<double> >& data, std::vector< std::vector<int> >& target)
 {
 	int numExamples = data.size();
-	double lms = 0;
+	int realClass, predClass;
+	double pot = 0;
 
 	for(int example = 0; example < numExamples; example++)
 	{
-		computePotentialAndError(data[example], target[example]);
-
+		realClass = 0;
+		predClass = 0;
 		for(int n = 0; n < numNeurons; n++)
-			lms += pow(error[n], 2);
+		{
+			pot = neurons[n].activationPotencial(data[example]);
 
-		//leastMeanSquare[epoch] = lms / numExamples;
-		cout << "LMS[" << epoch << "] = " << lms / numExamples << endl;
+			if(pot >= 0.0)
+				output[n] = 1;
+			else
+				output[n] = 0;
+
+			if( target[example][n] == 1 )
+				realClass = n;
+
+			if( output[n] == 1 )
+				predClass = n;
+		}
+		confusionMatrix[realClass][predClass]++;
 	}
 }

@@ -36,10 +36,9 @@ public:
 	void config(int numNeurons, int numSynapsesPerNeuron, int numClasses);
 	void trainingConfig(int numEpochs, double learningRate, double acceptableError);
 	void training(std::vector< std::vector<double> >& data, std::vector< std::vector<int> >& target);
-	void computePotentialAndError(std::vector<double>& input, std::vector<int>& target);
-	void getError(std::vector<int>& target);
+	void computePotentialAndError(int epoch, std::vector<double>& input, std::vector<int>& target);
 	void adjustWeights(std::vector<double>& input, std::vector<int>& target);
-	void getLeastMeanSquare(int epoch, std::vector< std::vector<double> >& data, std::vector< std::vector<int> >& target);
+	void operation(std::vector< std::vector<double> >& data, std::vector< std::vector<int> >& target);
 };
 
 #endif /* ADALINE_H_ */

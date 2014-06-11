@@ -10,7 +10,7 @@
 
 #include <vector>
 #include <cstdlib>
-#include </home/anderson/workspace/linear_classifiers/mersenne/mtwist.h>
+#include </home/anderson/workspace/linearClassifiers/mersenne/mtwist.h>
 
 class Neuron
 {
