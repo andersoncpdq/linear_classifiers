@@ -29,22 +29,30 @@ public:
 	std::vector<int> outputError;
 
 	std::vector< std::vector<int> > confusionMatrix;
-	float accuracy;
-	float errorRate;
-	float precision;
-	float sensitivity;
-	float specificity;
+	std::vector< std::vector<int> > confusionMatrixTotal;
+
+	std::vector<double> accuracy;
+	std::vector<double> errorRate;
+	std::vector<double> precision;
+	std::vector<double> sensitivity;
+	std::vector<double> specificity;
+
+	double meanAccuracy;
+	double meanErrorRate;
+	double meanPrecision;
+	double meanSensivity;
+	double meanSpecificity;
 
 	// Metodos
 	Perceptron();
-	void config(int numNeurons, int numSynapsesPerNeuron, int numClasses);
+	void config(int numNeurons, int numSynapsesPerNeuron, int numFolds);
 	void trainingConfig(int numEpochs, double learningRate);
 	void training(std::vector< std::vector<double> >& data, std::vector< std::vector<int> >& target);
 	void perceptronOutput(std::vector<double>& input);
 	void getErrorsAndAdjust(int epoch, std::vector<int>& target, std::vector<double>& input);
 	void adjustWeights(int indexNeuron, std::vector<double>& input);
-	void computePerformanceMetrics();
-	void printWeights();
+	void operation(std::vector< std::vector<double> >& data, std::vector< std::vector<int> >& target);
+	void computePerformanceMetrics(int cntFolds, int numFolds);
 };
 
 #endif /* PERCEPTRON_H_ */

@@ -1,0 +1,16 @@
+##### Matriz de Confusao #####
+
+Real Predita
+ [0]   [0]  =  29
+ [0]   [1]  =  71
+
+ [1]   [0]  =  0
+ [1]   [1]  =  50
+
+
+------ Metricas de Desempenho ------
+Accuracy = 0.526667
+Error Rate = 0.473333
+Precision = 0.29
+Sensitivity = 1
+Specificity = 0.413223

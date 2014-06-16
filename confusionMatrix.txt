@@ -1,0 +1,119 @@
+
+--------------------------------------------------
+Fold-0
+
+Matriz de Confusao
+
+Real Predita
+ [0]   [0]  =  0
+ [0]   [1]  =  30
+
+ [1]   [0]  =  0
+ [1]   [1]  =  0
+
+
+Metricas de Desempenho
+Accuracy = 0
+Error Rate = 1
+Precision = 0
+Sensitivity = 0
+Specificity = 0
+
+--------------------------------------------------
+Fold-1
+
+Matriz de Confusao
+
+Real Predita
+ [0]   [0]  =  0
+ [0]   [1]  =  20
+
+ [1]   [0]  =  10
+ [1]   [1]  =  0
+
+
+Metricas de Desempenho
+Accuracy = 0
+Error Rate = 1
+Precision = 0
+Sensitivity = 0
+Specificity = 0
+
+--------------------------------------------------
+Fold-2
+
+Matriz de Confusao
+
+Real Predita
+ [0]   [0]  =  0
+ [0]   [1]  =  0
+
+ [1]   [0]  =  30
+ [1]   [1]  =  0
+
+
+Metricas de Desempenho
+Accuracy = 0
+Error Rate = 1
+Precision = 0
+Sensitivity = 0
+Specificity = 0
+
+--------------------------------------------------
+Fold-3
+
+Matriz de Confusao
+
+Real Predita
+ [0]   [0]  =  20
+ [0]   [1]  =  0
+
+ [1]   [0]  =  10
+ [1]   [1]  =  0
+
+
+Metricas de Desempenho
+Accuracy = 0.666667
+Error Rate = 0.333333
+Precision = 1
+Sensitivity = 0.666667
+Specificity = 0
+
+--------------------------------------------------
+Fold-4
+
+Matriz de Confusao
+
+Real Predita
+ [0]   [0]  =  30
+ [0]   [1]  =  0
+
+ [1]   [0]  =  0
+ [1]   [1]  =  0
+
+
+Metricas de Desempenho
+Accuracy = 1
+Error Rate = 0
+Precision = 1
+Sensitivity = 1
+Specificity = 0
+
+--------------------------------------------------
+
+Matriz de Confusao Total
+
+Real Predita
+ [0]   [0]  =  50
+ [0]   [1]  =  50
+
+ [1]   [0]  =  50
+ [1]   [1]  =  0
+
+
+Metricas de Desempenho Medias
+Accuracy Media = 0.333333
+Error Rate Media = 0.666667
+Precision Media = 0.4
+Sensitivity Media = 0.333333
+Specificity Media = 0

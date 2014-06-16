@@ -14,14 +14,14 @@ Perceptron::Perceptron()
 	numSynapsesPerNeuron = 0;
 	learningRate 		 = 0;
 	changeWeights		 = 0;
-	accuracy			 = 0;
-	errorRate			 = 0;
-	precision			 = 0;
-	sensitivity			 = 0;
-	specificity			 = 0;
+	meanAccuracy		 = 0;
+	meanErrorRate		 = 0;
+	meanPrecision		 = 0;
+	meanSensivity		 = 0;
+	meanSpecificity		 = 0;
 }
 
-void Perceptron::config(int numNeurons, int numSynapsesPerNeuron, int numClasses)
+void Perceptron::config(int numNeurons, int numSynapsesPerNeuron, int numFolds)
 {
 	this->numNeurons = numNeurons;
 	this->numSynapsesPerNeuron = numSynapsesPerNeuron;
@@ -32,9 +32,19 @@ void Perceptron::config(int numNeurons, int numSynapsesPerNeuron, int numClasses
 	for(int i = 0; i < numNeurons; i++)
 		neurons[i].init(numSynapsesPerNeuron);
 
-	confusionMatrix.resize(numClasses);
-	for(int j = 0; j < numClasses; j++)
-		confusionMatrix[j].resize(numClasses);
+	confusionMatrix.resize(2);
+	confusionMatrixTotal.resize(2);
+	for(int j = 0; j < 2; j++)
+	{
+		confusionMatrix[j].resize(2);
+		confusionMatrixTotal[j].resize(2);
+	}
+
+	accuracy.resize(numFolds);
+	errorRate.resize(numFolds);
+	precision.resize(numFolds);
+	sensitivity.resize(numFolds);
+	specificity.resize(numFolds);
 }
 
 void Perceptron::trainingConfig(int numEpochs, double learningRate)
@@ -46,8 +56,7 @@ void Perceptron::trainingConfig(int numEpochs, double learningRate)
 void Perceptron::training(std::vector< std::vector<double> >& data, std::vector< std::vector<int> >& target)
 {
 	int numExamples = data.size();
-	int realClass, predClass;
-	int cnt = 0;
+	int cntEpochs = 0;
 
 	for(int epoch = 0; epoch < numEpochs; epoch++)
 	{
@@ -55,26 +64,10 @@ void Perceptron::training(std::vector< std::vector<double> >& data, std::vector<
 		{
 			perceptronOutput(data[example]);
 			getErrorsAndAdjust(epoch, target[example], data[example]);
-
-			// Preencher Matrix de confusao na ultima epoca de treinamento.
-			if( epoch == (numEpochs - 1) )
-			{
-				realClass = 0;
-				predClass = 0;
-				for(int i = 0; i < numNeurons; i++)
-				{
-					if( target[example][i] == 1 )
-						realClass = i;
-
-					if( output[i] == 1 )
-						predClass = i;
-				}
-				confusionMatrix[realClass][predClass]++;
-			}
 		}
-		cnt++;
+		cntEpochs++;
 	}
-	cout << endl << "Quantidade de epocas: " << cnt << endl;
+	cout << endl << "Quantidade de epocas: " << cntEpochs << endl;
 	cout << "Numero de atualizacoes de pesos: " << changeWeights << endl;
 }
 
@@ -89,7 +82,7 @@ void Perceptron::perceptronOutput(std::vector<double>& input)
 		if(pot >= 0.0)
 			output[n] = 1;
 		else
-			output[n] = 0;
+			output[n] = -1;
 	}
 }
 
@@ -123,10 +116,45 @@ void Perceptron::adjustWeights(int indexNeuron, std::vector<double>& input)
 	neurons[indexNeuron].biasOld = temp;
 }
 
-void Perceptron::computePerformanceMetrics()
+void Perceptron::operation(std::vector< std::vector<double> >& data, std::vector< std::vector<int> >& target)
 {
-	float TP, FN, FP, TN;
-	float P, N;
+	int numExamples = data.size();
+	int realClass, predClass;
+	double pot = 0;
+
+	for(int example = 0; example < numExamples; example++)
+	{
+		realClass = 0;
+		predClass = 0;
+		for(int n = 0; n < numNeurons; n++)
+		{
+			pot = neurons[n].activationPotencial(data[example]);
+
+			if(pot >= 0.0)
+				output[n] = 1;
+			else
+				output[n] = -1;
+
+			if(target[example][n] == 1)
+				realClass = 0;
+			else
+				realClass = 1;
+
+			if(output[n] == 1)
+				predClass = 0;
+			else
+				predClass = 1;
+
+			confusionMatrix[realClass][predClass]++;
+			confusionMatrixTotal[realClass][predClass]++;
+		}
+	}
+}
+
+void Perceptron::computePerformanceMetrics(int cntFolds, int numFolds)
+{
+	double TP, FN, FP, TN;
+	double P, N;
 
 	TP = confusionMatrix[0][0];
 	FN = confusionMatrix[1][0];
@@ -136,27 +164,35 @@ void Perceptron::computePerformanceMetrics()
 	P = TP + FN;
 	N = FP + TN;
 
-	accuracy = (TP + TN) / (P + N);
-	errorRate = 1 - accuracy;
-	precision = TP / (TP + FP);
-	sensitivity = TP / P;
-	specificity = TN / N;
+	if( (P + N) != 0 )
+		accuracy[cntFolds] = ( (TP + TN) / (P + N) );
 
-	cout << endl << "------ Metricas de Desempenho ------" << endl;
-	cout << "Accuracy = " << accuracy << endl;
-	cout << "Error Rate = " << errorRate << endl;
-	cout << "Precision = " << precision << endl;
-	cout << "Sensitivity = " << sensitivity << endl;
-	cout << "Specificity = " << specificity << endl;
-}
+	errorRate[cntFolds] = (1 - accuracy[cntFolds]);
 
-void Perceptron::printWeights()
-{
-	for(unsigned int n = 0; n < neurons.size(); n++)
+	if( (TP + FP) != 0 )
+		precision[cntFolds] = ( TP / (TP + FP) );
+
+	if(P != 0)
+		sensitivity[cntFolds] = ( TP / P );
+
+	if(N != 0)
+		specificity[cntFolds] = ( TN / N );
+
+	if(cntFolds == 4)
 	{
-		cout << "Neuron " << n << endl;
-		for(unsigned int w = 0; w < neurons[n].weights.size(); w++)
-			cout << "	W" << w << " = " << neurons[n].weights[w] << endl;
-		cout << endl;
+		double acc = 0, err = 0, pre = 0, sen = 0, spe = 0;
+		for(int i = 0; i < numFolds; i++)
+		{
+			acc += accuracy[i];
+			err += errorRate[i];
+			pre += precision[i];
+			sen += sensitivity[i];
+			spe += specificity[i];
+		}
+		meanAccuracy = acc / numFolds;
+		meanErrorRate = err / numFolds;
+		meanPrecision = pre / numFolds;
+		meanSensivity = sen / numFolds;
+		meanSpecificity = spe / numFolds;
 	}
 }
